@@ -77,7 +77,7 @@
       room_token: room_token,
       text_id: text_id
     });
-    let text_info = post_request('http://13.59.5.126:8003/text_result', json);
+    let text_info = post_request(`http://${location.host}/text_result`, json);
     var output = text_info['text'].split('');
     for (var segment of text_info["segments"]) {
         for (var i = segment['start_char']; i < segment['end_char']; i++) {

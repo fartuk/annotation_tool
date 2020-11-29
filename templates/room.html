@@ -87,11 +87,11 @@
         let json = JSON.stringify({
           room_token: room_token,
         });
-        let room_json = post_request('http://13.59.5.126:8003/room_info', json);
+        let room_json = post_request(`http://${location.host}/room_info`, json);
         
         let inner_html = ``
         for (var annotator_token of room_json["annotator_tokens"]) {
-            inner_html += `<p>http://13.59.5.126:8003/task/${annotator_token}</p>`;    
+            inner_html += `<p>http://${location.host}/task/${annotator_token}</p>`;    
         };
         
         document.querySelector('.annotators_block').innerHTML = inner_html;
@@ -101,7 +101,7 @@
         let json = JSON.stringify({
           room_token: room_token,
         });
-        let room_json = post_request('http://13.59.5.126:8003/room_info', json);
+        let room_json = post_request(`http://${location.host}/room_info`, json);
         
         let inner_html = ``
         for (var text_id of room_json["text_ids"]) {
@@ -109,10 +109,10 @@
               room_token: room_token,
               text_id: text_id
             });
-            let text_info = post_request('http://13.59.5.126:8003/text_result', json);  
+            let text_info = post_request(`http://${location.host}/text_result`, json);  
             inner_html += `
                             <tr>
-                                <td><a href="http://13.59.5.126:8003/text_info/${room_token}/${text_id}">${text_id}</a></td>
+                                <td><a href="http://${location.host}/text_info/${room_token}/${text_id}">${text_id}</a></td>
                                 <td>${text_info['task_counts'][0]}</td>
                                 <td>${text_info['task_counts'][1]}</td>
                                 <td>${text_info['task_counts'][2]}</td>
@@ -126,7 +126,7 @@
         let json = JSON.stringify({
           room_token: room_token,
         });
-        let add_annotator_result = post_request('http://13.59.5.126:8003/create_annotator', json)
+        let add_annotator_result = post_request(`http://${location.host}/create_annotator`, json)
         update_annotators_block()
 
     }
@@ -142,7 +142,7 @@
             sentences_per_task:sentences_per_task,
             task_time:task_time
         });
-        let add_text_result = post_request('http://13.59.5.126:8003/add_text', json);
+        let add_text_result = post_request(`http://${location.host}/add_text`, json);
         update_texts_block()
 
     }    

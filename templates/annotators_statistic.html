@@ -54,7 +54,7 @@
         let json = JSON.stringify({
           room_token: room_token,
         });
-        let room_json = post_request('http://13.59.5.126:8003/room_info', json);
+        let room_json = post_request(`http://${location.host}/room_info`, json);
         let inner_html = ``
         for (var annotator_token of room_json["annotator_tokens"]) {
             let json = JSON.stringify({
@@ -62,14 +62,14 @@
               annotator_token: annotator_token,
             });
             
-            let annotator_json = post_request('http://13.59.5.126:8003/annotator_info', json);
+            let annotator_json = post_request(`http://${location.host}/annotator_info`, json);
             let segment_cnt = 0;
             let times = [];
             for (var task_id of annotator_json["task_ids"]) {
                 let json = JSON.stringify({
                   task_id: task_id,
                 });
-                let task_json = post_request('http://13.59.5.126:8003/task_info', json);
+                let task_json = post_request(`http://${location.host}/task_info`, json);
                 var dict = {}
                 for (var word_task of task_json["word_task"]) {
                     dict[word_task['segmentation_idx']] = 1

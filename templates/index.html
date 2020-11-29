@@ -69,8 +69,6 @@
                 <div class="form_container">
                     <form onsubmit="return false">
                     <h2>Классы</h2> 
-<!--                     <input  type="text"  value="120">
- -->
                     <div class="classes_list"></div>    
                         
                     <button class="add_class_button"> +</button></br>
@@ -85,6 +83,7 @@
     </div>
   
 <script type="text/javascript">
+    alert(location.host)
     let curr_type = 'text_segmentation'
     border()
     
@@ -152,8 +151,8 @@
             class_names: class_names,
             room_type: curr_type
         });
-        result = post_request('http://13.59.5.126:8003/create_room', json)
-        window.location.replace(`http://13.59.5.126:8003/room/${result['room_token']}`);
+        result = post_request(`http://${location.host}/create_room`, json)
+        window.location.replace(`http://${location.host}/room/${result['room_token']}`);
     }    
            
     

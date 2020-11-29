@@ -43,7 +43,7 @@
     let annotator_token = document.querySelector('.annotator_token').innerText
     
     let json = JSON.stringify({annotator_token: annotator_token});
-    let task_json = post_request('http://13.59.5.126:8003/get_task', json);
+    let task_json = post_request(`http://${location.host}/get_task`, json);
 
     draw_text()
         
@@ -198,7 +198,7 @@
         
         }
         let json = JSON.stringify(task_json);
-        result = post_request('http://13.59.5.126:8003/post_task', json)
+        result = post_request(`http://${location.host}/post_task`, json)
     }    
        
 
