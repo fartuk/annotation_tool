@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<!-- <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/style.css') }}">     -->
+<link rel="stylesheet" href='/static/styles/style.css' />
+    
+    
+</head>
+<body>
+     <div class="header">
+        <a href="/room/{{room_token}}"><img class="header_img" src="/static/img/home.png" width="30" height="30" alt="home" float="left"></a>
+            <div class="room_token">{{room_token}}</div>
+    </div>
+
+    
+    <div class="room_container">
+ 
+        <div class="left_room_container">
+            <div class="add_text_card">
+                <h1>Добавить новый текст</h1>
+
+                <form class="text_submit_form" onsubmit="return false">
+                     Текст 
+                     <textarea class="input_text" cols="40" rows="5"></textarea></br></br>
+                     Время на разметку</br>
+                     <input class="task_time" type="text" class="" value="120"></br></br>
+                     Число предложений в задании</br>
+                     <input class="sentences_per_task" type="text" value="2">    
+
+                     <input type="submit" value="Добавить текст" class="graphite-flat-button" onclick="add_text();">
+                </form>
+            </div>        
+
+            <div class="annotators_card">
+                <h1>Ссылки для разметчиков</h1>
+                <div class="annotators_block"></div>
+                <button type="button", class="add_annotator_button graphite-flat-button">Добавить разметчика</button>
+                <a href="/annotators_statistic/{{room_token}}"><button class="graphite-flat-button">Посмотреть статистику</button></a>
+
+            </div>
+        </div>
+
+        <div class="right_room_container">
+            
+            <table class="styled-table">
+            <thead>
+                <tr>
+                    <th>Ссылка</th>
+                    <th>Открытые задания</th>
+                    <th>Назначенные задания</th>
+                    <th>Завершенные задания</th>
+                </tr>
+            </thead>
+            <tbody class="texts_block">
+            </tbody>
+        </table>
+
+            
+            
+
+        </div>
+    </div>
+    
+    
+<script type="text/javascript">
+    let room_token = document.querySelector('.room_token').innerText
+       
+    update_annotators_block()
+    update_texts_block()
+    
+    
+    function post_request(url_path, json) {
+        let xhr = new XMLHttpRequest();
+        xhr.open("POST", url_path, false)
+        xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+        xhr.send(json);
+        if (xhr.status != 200) {
+          alert( xhr.status + ': ' + xhr.statusText );
+        }
+    
+        return JSON.parse(xhr.responseText)
+    }
+    
+    
+    function update_annotators_block() {    
+        let json = JSON.stringify({
+          room_token: room_token,
+        });
+        let room_json = post_request('http://13.59.5.126:8003/room_info', json);
+        
+        let inner_html = ``
+        for (var annotator_token of room_json["annotator_tokens"]) {
+            inner_html += `<p>http://13.59.5.126:8003/task/${annotator_token}</p>`;    
+        };
+        
+        document.querySelector('.annotators_block').innerHTML = inner_html;
+    }
+     
+    function update_texts_block() {  
+        let json = JSON.stringify({
+          room_token: room_token,
+        });
+        let room_json = post_request('http://13.59.5.126:8003/room_info', json);
+        
+        let inner_html = ``
+        for (var text_id of room_json["text_ids"]) {
+            let json = JSON.stringify({
+              room_token: room_token,
+              text_id: text_id
+            });
+            let text_info = post_request('http://13.59.5.126:8003/text_result', json);  
+            inner_html += `
+                            <tr>
+                                <td><a href="http://13.59.5.126:8003/text_info/${room_token}/${text_id}">${text_id}</a></td>
+                                <td>${text_info['task_counts'][0]}</td>
+                                <td>${text_info['task_counts'][1]}</td>
+                                <td>${text_info['task_counts'][2]}</td>
+                            </tr>`;    
+        };
+        
+        document.querySelector('.texts_block').innerHTML = inner_html;
+    }
+    
+    function add_annotator() {
+        let json = JSON.stringify({
+          room_token: room_token,
+        });
+        let add_annotator_result = post_request('http://13.59.5.126:8003/create_annotator', json)
+        update_annotators_block()
+
+    }
+    
+    function add_text() {
+        var input_text = document.querySelector('.input_text').value;
+        var sentences_per_task = document.querySelector('.sentences_per_task').value;
+        var task_time = document.querySelector('.task_time').value;
+
+        let json = JSON.stringify({
+            room_token: room_token,
+            text:input_text,
+            sentences_per_task:sentences_per_task,
+            task_time:task_time
+        });
+        let add_text_result = post_request('http://13.59.5.126:8003/add_text', json);
+        update_texts_block()
+
+    }    
+    
+    var add_annotator_button = document.querySelector('.add_annotator_button');
+    add_annotator_button.onclick = add_annotator; 
+    
+ 
+</script>    
+    
+</body>
+</html>

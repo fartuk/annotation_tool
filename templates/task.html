@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<link rel="stylesheet" href='/static/styles/style.css' />
+
+    
+    
+    <script type="text/javascript">
+        function timer(){
+            var obj=document.getElementById('timer_inp');
+            if (obj.innerHTML<=0){
+                setTimeout(function(){},1000);
+            } else {
+                setTimeout(timer,1000);
+                obj.innerHTML--;
+            }
+
+        }
+        setTimeout(timer,1000);
+    </script>  
+    
+    
+</head>
+<body>
+    <div class="header">
+        <div class="annotator_token">{{annotator_token}}</div>
+    </div>
+    <div class="task_container">
+        <div class="task_card">
+            <div class="timer_block"></div>
+
+            <div class="text"></div>
+
+            <form class="form_buttons" action="javascript:void(0);" method="post">
+
+            </form>
+        </div>
+    </div>
+
+    
+<script type="text/javascript">
+    let annotator_token = document.querySelector('.annotator_token').innerText
+    
+    let json = JSON.stringify({annotator_token: annotator_token});
+    let task_json = post_request('http://13.59.5.126:8003/get_task', json);
+
+    draw_text()
+        
+    
+    var curr_number = -1
+    var max_number = -1
+    
+    
+    function get_request(url_path) {
+        let xhr = new XMLHttpRequest();
+        xhr.open("GET", url_path, false)
+        xhr.send();
+        if (xhr.status != 200) {
+          alert( xhr.status + ': ' + xhr.statusText );
+        }
+    
+        return JSON.parse(xhr.responseText)
+    }
+    
+    
+    function post_request(url_path, json) {
+        let xhr = new XMLHttpRequest();
+        xhr.open("POST", url_path, false)
+        xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+        xhr.send(json);
+        if (xhr.status != 200) {
+          alert( xhr.status + ': ' + xhr.statusText );
+        }
+    
+        return JSON.parse(xhr.responseText)
+    }
+    
+    
+    function draw_text() {
+        let inner_html = ``
+        if (task_json['status'] == -1) {
+            inner_html = `<h1>Заданий нет, попробуйте зайти позже</h1>`;
+  
+        }
+        else {
+            for (var word_info of task_json["word_task"]) {
+                inner_html += `<span class="off" id="${word_info["word_idx"]}">${word_info["word"]}</span> `;   
+            };
+            
+                        
+            buttons_html = `
+                            <button class="add_mistake_button graphite-flat-button"> Добавить сегмент</button>
+                            <div class="mistakes_block"></div>   
+                            <a href="#" onclick="window.location.reload(true);">
+                                <button class="send graphite-flat-button">Отправить</button>
+                            </a>
+                            `
+            
+            document.querySelector('.form_buttons').innerHTML = buttons_html;
+            
+            
+            last_time = task_json["task_time"] - (Math.floor(Date.now() / 1000) - task_json["start_time"])
+            last_time = Math.max(last_time, 0)
+            document.querySelector('.timer_block').innerHTML = `Осталось: <span id="timer_inp">${last_time}</span>c`;
+
+            
+        }     
+        document.querySelector('.text').innerHTML = inner_html;
+    }
+    
+    
+    
+    function border() {
+        var mistakes_block = document.querySelector('.mistakes_block');
+
+        var all = mistakes_block.querySelectorAll(`.bordered`);
+        for (var i = 0; i < all.length; i++) {
+          all[i].className = all[i].className.split(" ")[0]; 
+        }
+        
+        var all = mistakes_block.querySelectorAll(`.mistake${curr_number}`);
+        for (var i = 0; i < all.length; i++) {
+          all[i].className += " bordered"; 
+        }
+    }
+    
+    
+    function add_input() {
+        const div = document.createElement('p');
+        max_number = max_number + 1
+        curr_number = max_number
+        
+        div.className = `mistake${curr_number}`;
+        div.id = max_number;
+
+        var vals = '<option value=""></option>`'
+        for (var key of task_json['class_names']) {
+            vals += `<option value="${key}">${key}</option>`;
+        }                                    
+        div.innerHTML = `<select name="mistake${curr_number}" onchange="add_subtype(${curr_number}, this.value);">
+                        ${vals}
+                         </select>
+                         
+                        <span id="sub_mistake${curr_number}"></span> 
+
+                         `;
+        document.querySelector('.mistakes_block').appendChild(div);
+        border()
+    }
+    
+    function word_click(word) {
+        word.onclick = function() {
+            var class_value = word.getAttribute('class');
+            if(class_value === 'off' && curr_number != -1) {
+              word.setAttribute ('class',`mistake${curr_number}`);
+            } else {
+              word.setAttribute ('class','off');
+            }
+        }
+    }
+
+    function block_click(block) {
+        block.onclick = function() {
+            curr_number = block.getAttribute('id');
+            border()
+        }
+    }
+    
+    function mistakes_block_move() {
+        var block = document.querySelector('.mistakes_block');
+        var all_mistakes = block.querySelectorAll('p');
+        all_mistakes.forEach(block_click);
+    }    
+    
+    function send_onclick() {
+        var all_selects = document.querySelectorAll('select');
+        var i;
+        var class_results = {"off":"off"};
+        for (i = 0; i < all_selects.length; i++) {
+            segmentation_idx = all_selects[i].getAttribute('name');        
+            segmentation_class = all_selects[i].value; 
+            class_results[segmentation_idx] = segmentation_class
+        }     
+            
+        var span_words = document.querySelector('.text').querySelectorAll('span');
+        
+        var idxs = [];
+        var word_classes = []
+        for (i = 0; i < span_words.length; i++) {
+            word_id = span_words[i].getAttribute('id');
+            segmentation_idx = span_words[i].getAttribute('class');
+
+            let new_word_info = task_json['word_task'][i];
+            new_word_info["segmentation_idx"] = segmentation_idx;
+            new_word_info["class"] = class_results[segmentation_idx]
+            task_json['word_task'][i] = new_word_info
+        
+        }
+        let json = JSON.stringify(task_json);
+        result = post_request('http://13.59.5.126:8003/post_task', json)
+    }    
+       
+
+    var all_words = document.querySelectorAll('span');
+    all_words.forEach(word_click);
+
+    var add_mistake_button = document.querySelector('.add_mistake_button');
+    add_mistake_button.onclick = add_input;
+
+    var mistakes_block = document.querySelector('.mistakes_block');
+    mistakes_block.onmousemove = mistakes_block_move;    
+    
+    var send = document.querySelector('.send');
+    send.onclick = send_onclick;
+    
+
+ 
+</script>    
+    
+</body>
+</html>

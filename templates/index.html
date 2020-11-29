@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <link rel="stylesheet" href='/static/styles/landing.css'/>
+    
+
+    
+</head>
+<body class="landing_body">
+    
+    
+    <div class="header">
+        <a href="/room/{{room_token}}"></a>
+    </div>
+
+    
+    <div class="html_container">
+        <div class="landing_container">
+            <div class="lading_card">
+                <div class="lading_card_img"><img src="static/img/room.svg", height="200"></div>
+                <div class="lading_card_header">Создайте комнату</div>
+            </div>
+
+            <div class="lading_card">
+                <div class="lading_card_img"><img src="static/img/task.svg", height="200"></div>
+                <div class="lading_card_header">Загрузите задания</div>
+            </div>
+
+            <div class="lading_card">
+                <div class="lading_card_img"><img src="static/img/1488581.svg", height="200"></div>
+                <div class="lading_card_header">Добавьте разметчиков и отправьте им ссылки</div>
+            </div>
+
+            <div class="lading_card">
+                <div class="lading_card_img"><img src="static/img/json.svg", height="200"></div>
+                <div class="lading_card_header">Скачайте готовую разметку</div>
+            </div>
+
+            <div class="break_line"></div>
+
+            <div class="create_room_container">
+                <h1>Создать новую комнату</h1>
+                <div class="room_types_container">
+                    <div class="room_type bordered" id="text_segmentation">
+                        <img src="static/img/txt.svg", height="100">
+                         <div class="room_type_text">Сегментация текста</div>
+                    </div>
+                    
+                    <div class="room_type" id="object_classification">
+                        <img src="static/img/class.svg", height="100">
+                         <div class="room_type_text">Классификация объектов</div>
+                    </div>
+                    
+                    <div class="room_type" id="image_detection">
+                        <img src="static/img/detection.png", height="100">
+                         <div class="room_type_text">Детекция на изображениях</div>
+                    </div>                    
+                    
+<!--                     <div class="room_type" id="image_segmentation">
+                        <img src="static/img/txt.svg", height="100">
+                         <div class="room_type_text">Сегментация на изображениях</div>
+                    </div>    -->
+                    
+                    
+                </div>
+                <div class="example_block"><a href="" class="example_link">Пример задания</a></div>
+                
+                <div class="form_container">
+                    <form onsubmit="return false">
+                    <h2>Классы</h2> 
+<!--                     <input  type="text"  value="120">
+ -->
+                    <div class="classes_list"></div>    
+                        
+                    <button class="add_class_button"> +</button></br>
+                    
+                    <button class="send_button">Создать комнату</button>
+
+                        
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+  
+<script type="text/javascript">
+    let curr_type = 'text_segmentation'
+    border()
+    
+    let examples = {"text_segmentation":"/task/0b476e18-5edd-46f9-b69c-2d1aaa014f36",
+                   "object_classification":"object_classification link",
+                   "image_detection":"image_detection link",
+                   "image_segmentation":"image_segmentation link",}
+    
+    example_link = document.querySelector('.example_link');
+    example_link.setAttribute("href", examples[curr_type]);
+    
+    function post_request(url_path, json) {
+        let xhr = new XMLHttpRequest();
+        xhr.open("POST", url_path, false)
+        xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+        xhr.send(json);
+        if (xhr.status != 200) {
+          alert( xhr.status + ': ' + xhr.statusText );
+        }
+    
+        return JSON.parse(xhr.responseText)
+    }    
+    
+    function add_class() {
+        const div = document.createElement('p');
+                                
+        div.innerHTML = `
+                            <input class="class_input" type="text"  value="Нецензурная лексика">
+                         `;
+        document.querySelector('.classes_list').appendChild(div);
+    }
+    
+    
+    function block_click(block) {
+        block.onclick = function() {
+            curr_type = block.getAttribute('id');
+            example_link = document.querySelector('.example_link');
+            example_link.setAttribute("href", examples[curr_type]);
+            border()
+        }
+    }    
+    
+    
+    function border() {
+        var room_types_container = document.querySelector('.room_types_container');
+        var all = room_types_container.querySelectorAll(`.bordered`);
+        for (var i = 0; i < all.length; i++) {
+          all[i].className = all[i].className.split(" ")[0]; 
+        }
+        
+        var curr = document.getElementById(curr_type);
+        curr.className += " bordered"; 
+
+    }
+    
+    function send_onclick() {
+        var all_selects = document.querySelectorAll('.class_input');
+        var class_names = [];
+        for (var i = 0; i < all_selects.length; i++) {        
+            name = all_selects[i].value;
+            class_names.push(name);
+        }     
+                    
+        let json = JSON.stringify({
+            class_names: class_names,
+            room_type: curr_type
+        });
+        result = post_request('http://13.59.5.126:8003/create_room', json)
+        window.location.replace(`http://13.59.5.126:8003/room/${result['room_token']}`);
+    }    
+           
+    
+    var add_class_button = document.querySelector('.add_class_button');
+    add_class_button.onclick = add_class;    
+    
+    var all_types = document.querySelectorAll('.room_type');
+    all_types.forEach(block_click);
+    
+    var send_button = document.querySelector('.send_button');
+    send_button.onclick = send_onclick;
+    
+    
+    
+</script>    
+    
+</body>
+</html>   
+ 

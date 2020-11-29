@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<!-- <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/style.css') }}">     -->
+<link rel="stylesheet" href='/static/styles/style.css' />
+    
+    
+</head>
+<body>
+     <div class="header">
+        <a href="/room/{{room_token}}"><img class="header_img" src="/static/img/home.png" width="30" height="30" alt="home" float="left"></a>
+            <div class="room_token">{{room_token}}</div>
+    </div>
+    
+    <div class="room_container">
+        <table class="styled-table">
+            <thead>
+                <tr>
+                    <th>Аннотатор</th>
+                    <th>Количество заданий</th>
+                    <th>Количество сегментов</th>
+                    <th>Среднее время</th>
+                </tr>
+            </thead>
+            <tbody class="annotators_statistic_table">
+            </tbody>
+        </table>
+        
+        
+        
+        
+    </div>
+ 
+    
+<script type="text/javascript">
+    let room_token = document.querySelector('.room_token').innerText
+    
+    update_annotators_block()
+    
+    function post_request(url_path, json) {
+        let xhr = new XMLHttpRequest();
+        xhr.open("POST", url_path, false)
+        xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+        xhr.send(json);
+        if (xhr.status != 200) {
+          alert( xhr.status + ': ' + xhr.statusText );
+        }
+    
+        return JSON.parse(xhr.responseText)
+    }   
+    
+    function update_annotators_block() {        
+        let json = JSON.stringify({
+          room_token: room_token,
+        });
+        let room_json = post_request('http://13.59.5.126:8003/room_info', json);
+        let inner_html = ``
+        for (var annotator_token of room_json["annotator_tokens"]) {
+            let json = JSON.stringify({
+              room_token: room_token,
+              annotator_token: annotator_token,
+            });
+            
+            let annotator_json = post_request('http://13.59.5.126:8003/annotator_info', json);
+            let segment_cnt = 0;
+            let times = [];
+            for (var task_id of annotator_json["task_ids"]) {
+                let json = JSON.stringify({
+                  task_id: task_id,
+                });
+                let task_json = post_request('http://13.59.5.126:8003/task_info', json);
+                var dict = {}
+                for (var word_task of task_json["word_task"]) {
+                    dict[word_task['segmentation_idx']] = 1
+                }
+                segment_cnt += Object.keys(dict).length - 1
+                if ('finish_time' in task_json) {
+                    times.push(task_json['finish_time'] - task_json['start_time'])
+                }
+            }
+            
+            var sum_time = 0;
+            for (var time of times) {    
+                sum_time += time
+            }
+            inner_html += `
+                <tr>
+                    <td>${annotator_token}</td>
+                    <td>${annotator_json['task_ids'].length}</td>
+                    <td>${segment_cnt}</td>
+                    <td>${sum_time / times.length}</td>
+                </tr>`;    
+
+        };
+        
+        document.querySelector('.annotators_statistic_table').innerHTML = inner_html;
+    }
+ 
+</script>    
+    
+</body>
+</html>
