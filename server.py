@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request
+from flask_cors import cross_origin
 import os
 import numpy as np
 import json
@@ -21,8 +22,15 @@ global text_start_time
 text_start_time =  int(time.time())
 
 
+@app.route('/test_get', methods=['get'])
+@cross_origin()
+def test_get():
+    resp = {}
+    resp["hello"] = "hello"
+    return resp
 
 @app.route('/create_room', methods=['post', 'get'])
+@cross_origin()
 def create_room():
     room_type = request.json.get('room_type')
     class_names = request.json.get('class_names')
@@ -49,6 +57,7 @@ def create_room():
 
 
 @app.route('/create_annotator', methods=['post', 'get'])
+@cross_origin()
 def create_annotator():
     room_token = request.json.get('room_token')
     room_json = load_json("data/rooms/{}.json".format(room_token))
@@ -68,6 +77,7 @@ def create_annotator():
 
 
 @app.route('/room_info', methods=['post', 'get'])
+@cross_origin()
 def room_info():
     room_token = request.json.get('room_token')
     room_json = load_json("data/rooms/{}.json".format(room_token))
@@ -77,6 +87,7 @@ def room_info():
 
     
 @app.route('/add_text', methods=['post', 'get'])
+@cross_origin()
 def add_text():
     text_json = json.loads(request.data)
     text_json['text_id'] = str(uuid4())
@@ -113,6 +124,7 @@ def add_text():
 
 
 @app.route('/get_task', methods=['post', 'get'])
+@cross_origin()
 def get_task():
     annotator_token = request.json.get('annotator_token')
     annotator_json = load_json("data/annotators/{}.json".format(annotator_token))
@@ -142,6 +154,7 @@ def get_task():
 
                 
 @app.route('/post_task', methods=['post', 'get'])
+@cross_origin()
 def post_task():
     task_json = json.loads(request.data)
     task_json["status"] = TaskStatus.FINISHED
@@ -154,6 +167,7 @@ def post_task():
 
 
 @app.route('/text_result', methods=['post', 'get'])
+@cross_origin()
 def text_result():
     room_token = request.json.get('room_token')
     text_id = request.json.get('text_id')
@@ -179,6 +193,7 @@ def text_result():
 
 
 @app.route('/annotator_info', methods=['post', 'get'])
+@cross_origin()
 def annotator_info():
     annotator_token = request.json.get('annotator_token')
     annotator_json = load_json("data/annotators/{}.json".format(annotator_token))    
@@ -188,6 +203,7 @@ def annotator_info():
 
 
 @app.route('/task_info', methods=['post', 'get'])
+@cross_origin()
 def task_info():
     task_id = request.json.get('task_id')
     task_json = load_json("data/tasks/{}.json".format(task_id))    
