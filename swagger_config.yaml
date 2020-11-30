@@ -1,0 +1,1416 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: annotation_tool
+  description: ''
+servers: 
+  - url: http://13.59.5.126:8003
+
+paths:
+  /create_room:
+    post:
+      summary: creates new room
+      description: creates new room
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                room_type:
+                  type: string
+                  example: "text_segmentation"
+                class_names:
+                  type: array
+                  items: 
+                      type: string
+                  example: ["Нецензурная лексика", "Повторение"]
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  annotator_tokens:
+                    type: array
+                    items:
+                      type: string
+                    example: []
+                  class_names:
+                    type: array
+                    items:
+                      type: string
+                    example: ["Нецензурная лексика", "Повторение"]
+                  room_token:
+                    type: string
+                    example: "cca60d9c-4375-4691-aa27-e123e138e56f"
+                  room_type:
+                    type: string
+                    example: "text_segmentation"
+                  task_queue:
+                    type: array
+                    items:
+                      type: string
+                    example: []
+                  text_ids:
+                    type: array
+                    items:
+                      type: string
+                    example: []
+                    
+                  
+
+                         
+  /create_annotator:
+    post:
+      summary: creates new annotator
+      description: creates new annotator
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                room_token:
+                  type: string
+                  example: "84935f0b-72c5-4b4d-92c9-6462f42bb3a4"
+              
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  annotator_token:
+                    type: string
+                    example: "4524084e-c787-4f8a-b5a6-521aaaf82c9b"
+                  room_token:
+                    type: string
+                    example: "84935f0b-72c5-4b4d-92c9-6462f42bb3a4" 
+                  task_ids:
+                    type: array
+                    items:
+                      type: string
+                    example: []
+
+                
+         
+  /room_info:
+    post:
+      summary: returns rooms info
+      description: returns rooms info
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                room_token:
+                  type: string
+                  example: "84935f0b-72c5-4b4d-92c9-6462f42bb3a4" 
+              
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  annotator_tokens:
+                    type: array
+                    items:
+                      type: string
+                    example: [
+                      "4524084e-c787-4f8a-b5a6-521aaaf82c9b",
+                      "88f03c15-f2c7-4af9-8f5d-e4538381d164"
+                    ]
+                  class_names:
+                    type: array
+                    items:
+                      type: string
+                    example: ["Нецензурная лексика", "Повторение"]
+                  room_token:
+                    type: string
+                    example: "84935f0b-72c5-4b4d-92c9-6462f42bb3a4"
+                  room_type:
+                    type: string
+                    example: "text_segmentation"
+                  task_queue:
+                    type: array
+                    items:
+                      type: string
+                    example: []
+                  text_ids:
+                    type: array
+                    items:
+                      type: string
+                    example: []
+          
+
+  /add_text:
+    post:
+      summary: adds text
+      description: add text task into room
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                room_token:
+                  type: string
+                  example: "84935f0b-72c5-4b4d-92c9-6462f42bb3a4"
+                text:
+                  type: string
+                  example: "Это был странный мир: по утрам за окном не пели птицы, не шелестела трава, собаки лаяли совершенно беззвучно, а мужики, то и дело ругающиеся на улицах, широко раскрывали рты, но ни единого звука оттуда не доносилось. В десять лет, после тяжело перенесённой скарлатины, Костя почти оглох, и вот уже шестой год его окружал мир тишины и покоя."
+                sentences_per_task:
+                  type: string
+                  example: "2"
+                task_time:
+                  type: string
+                  example: "120"
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "OK"
+
+
+  /get_task:
+    post:
+      summary: get task for annotator
+      description: get task for annotator from his rooms queue
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                annotator_token:
+                  type: string
+                  example: "4524084e-c787-4f8a-b5a6-521aaaf82c9b"
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  annotator_token:
+                    type: string
+                    example: "4524084e-c787-4f8a-b5a6-521aaaf82c9b"
+                  class_names:
+                    type: array
+                    items:
+                      type: string
+                    example: ["Нецензурная лексика", "Повторение"]
+                  room_token:
+                    type: string
+                    example: "84935f0b-72c5-4b4d-92c9-6462f42bb3a4"
+                  room_type:
+                    type: string
+                    example: "text_segmentation"
+                  start_time:
+                    type: integer
+                    example: 1606946458
+                  status:
+                    type: integer
+                    example: 1
+                  task_id:
+                    type: string
+                    example: "ec2c48be-7d2c-40b4-a093-8978a5fde3da"
+                  task_time:
+                    type: integer
+                    example: 120
+                  text_id:
+                    type: string
+                    example: "68a9e120-ba7f-4edf-a2bc-a94f58086bc1"
+                  word_task:
+                    type: array
+                    items:
+                      type: object
+                    example: [
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "Это",
+                          "word_idx": 0
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "был",
+                          "word_idx": 1
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "странный",
+                          "word_idx": 2
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "мир:",
+                          "word_idx": 3
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "по",
+                          "word_idx": 4
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "утрам",
+                          "word_idx": 5
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "за",
+                          "word_idx": 6
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "окном",
+                          "word_idx": 7
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "не",
+                          "word_idx": 8
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "пели",
+                          "word_idx": 9
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "птицы,",
+                          "word_idx": 10
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "не",
+                          "word_idx": 11
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "шелестела",
+                          "word_idx": 12
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "трава,",
+                          "word_idx": 13
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "собаки",
+                          "word_idx": 14
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "лаяли",
+                          "word_idx": 15
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "совершенно",
+                          "word_idx": 16
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "беззвучно,",
+                          "word_idx": 17
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "а",
+                          "word_idx": 18
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "мужики,",
+                          "word_idx": 19
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "то",
+                          "word_idx": 20
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "и",
+                          "word_idx": 21
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "дело",
+                          "word_idx": 22
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "ругающиеся",
+                          "word_idx": 23
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "на",
+                          "word_idx": 24
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "улицах,",
+                          "word_idx": 25
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "широко",
+                          "word_idx": 26
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "раскрывали",
+                          "word_idx": 27
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "рты,",
+                          "word_idx": 28
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "но",
+                          "word_idx": 29
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "ни",
+                          "word_idx": 30
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "единого",
+                          "word_idx": 31
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "звука",
+                          "word_idx": 32
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "оттуда",
+                          "word_idx": 33
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "не",
+                          "word_idx": 34
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "доносилось.",
+                          "word_idx": 35
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "В",
+                          "word_idx": 36
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "десять",
+                          "word_idx": 37
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "лет,",
+                          "word_idx": 38
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "после",
+                          "word_idx": 39
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "тяжело",
+                          "word_idx": 40
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "перенесённой",
+                          "word_idx": 41
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "скарлатины,",
+                          "word_idx": 42
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "Костя",
+                          "word_idx": 43
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "почти",
+                          "word_idx": 44
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "оглох,",
+                          "word_idx": 45
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "и",
+                          "word_idx": 46
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "вот",
+                          "word_idx": 47
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "уже",
+                          "word_idx": 48
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "шестой",
+                          "word_idx": 49
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "год",
+                          "word_idx": 50
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "его",
+                          "word_idx": 51
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "окружал",
+                          "word_idx": 52
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "мир",
+                          "word_idx": 53
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "тишины",
+                          "word_idx": 54
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "и",
+                          "word_idx": 55
+                        },
+                        {
+                          "class": "off",
+                          "segmentation_idx": "off",
+                          "word": "покоя.",
+                          "word_idx": 56
+                        }
+                    ]
+                  work_start_time:
+                    type: string
+                    example: 1606946831
+                    
+     
+                    
+                    
+
+
+  /post_task:
+    post:
+      summary: finish task
+      description: upload task result, set task status FINISHED
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example: {
+                  "task_id": "98d10e50-e45b-4f78-ad68-27bf536a1e81",
+                  "word_task": [
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "Это",
+                      "word_idx": 0
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "был",
+                      "word_idx": 1
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "странный",
+                      "word_idx": 2
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "мир:",
+                      "word_idx": 3
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "по",
+                      "word_idx": 4
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "утрам",
+                      "word_idx": 5
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "за",
+                      "word_idx": 6
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "окном",
+                      "word_idx": 7
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "не",
+                      "word_idx": 8
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "пели",
+                      "word_idx": 9
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "птицы,",
+                      "word_idx": 10
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "не",
+                      "word_idx": 11
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "шелестела",
+                      "word_idx": 12
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "трава,",
+                      "word_idx": 13
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "собаки",
+                      "word_idx": 14
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "лаяли",
+                      "word_idx": 15
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "совершенно",
+                      "word_idx": 16
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "беззвучно,",
+                      "word_idx": 17
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "а",
+                      "word_idx": 18
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "мужики,",
+                      "word_idx": 19
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "то",
+                      "word_idx": 20
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "и",
+                      "word_idx": 21
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "дело",
+                      "word_idx": 22
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "ругающиеся",
+                      "word_idx": 23
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "на",
+                      "word_idx": 24
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "улицах,",
+                      "word_idx": 25
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "широко",
+                      "word_idx": 26
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "раскрывали",
+                      "word_idx": 27
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "рты,",
+                      "word_idx": 28
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "но",
+                      "word_idx": 29
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "ни",
+                      "word_idx": 30
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "единого",
+                      "word_idx": 31
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "звука",
+                      "word_idx": 32
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "оттуда",
+                      "word_idx": 33
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "не",
+                      "word_idx": 34
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "доносилось.",
+                      "word_idx": 35
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "В",
+                      "word_idx": 36
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "десять",
+                      "word_idx": 37
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "лет,",
+                      "word_idx": 38
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "после",
+                      "word_idx": 39
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "тяжело",
+                      "word_idx": 40
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "перенесённой",
+                      "word_idx": 41
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "скарлатины,",
+                      "word_idx": 42
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "Костя",
+                      "word_idx": 43
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "почти",
+                      "word_idx": 44
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "оглох,",
+                      "word_idx": 45
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "и",
+                      "word_idx": 46
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "вот",
+                      "word_idx": 47
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "уже",
+                      "word_idx": 48
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "шестой",
+                      "word_idx": 49
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "год",
+                      "word_idx": 50
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "его",
+                      "word_idx": 51
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "окружал",
+                      "word_idx": 52
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "мир",
+                      "word_idx": 53
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "тишины",
+                      "word_idx": 54
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "и",
+                      "word_idx": 55
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "покоя.",
+                      "word_idx": 56
+                    }
+                  ]
+              }
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                example: {
+                  "status": "OK"
+                }
+          
+
+  /text_result:
+    post:
+      summary: summarise text annotation
+      description: summarise text annotation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                room_token:
+                  type: string
+                  example: "84935f0b-72c5-4b4d-92c9-6462f42bb3a4"
+                text_id:
+                  type: string
+                  example: "68a9e120-ba7f-4edf-a2bc-a94f58086bc1"
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                example: {
+                  "room_token": "84935f0b-72c5-4b4d-92c9-6462f42bb3a4",
+                  "segments": [],
+                  "sentences_per_task": "2",
+                  "start_time": 1606946458,
+                  "task_counts": {
+                    "0": 0,
+                    "1": 1,
+                    "2": 0
+                  },
+                  "task_ids": [
+                    "ec2c48be-7d2c-40b4-a093-8978a5fde3da"
+                  ],
+                  "task_time": 120,
+                  "text": "Это был странный мир: по утрам за окном не пели птицы, не шелестела трава, собаки лаяли совершенно беззвучно, а мужики, то и дело ругающиеся на улицах, широко раскрывали рты, но ни единого звука оттуда не доносилось. В десять лет, после тяжело перенесённой скарлатины, Костя почти оглох, и вот уже шестой год его окружал мир тишины и покоя.",
+                  "text_id": "68a9e120-ba7f-4edf-a2bc-a94f58086bc1"
+                }
+                
+
+  /annotator_info:
+    post:
+      summary: returns annotator info
+      description: returns annotator info
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example: {
+                  "annotator_token": "4524084e-c787-4f8a-b5a6-521aaaf82c9b"
+              }
+      responses:
+        '200':
+          description: success
+          content:
+            apllication/json:
+              schema:
+                type: object
+                example: {
+                  "annotator_token": "4524084e-c787-4f8a-b5a6-521aaaf82c9b",
+                  "room_token": "84935f0b-72c5-4b4d-92c9-6462f42bb3a4",
+                  "task_ids": [
+                    "ec2c48be-7d2c-40b4-a093-8978a5fde3da",
+                    "cbe93d9f-fd42-499d-8854-5eb1d31033a4",
+                    "f9de1111-9413-432c-8716-65d50aea4a54",
+                    "98d10e50-e45b-4f78-ad68-27bf536a1e81"
+                  ]
+                }
+
+
+  /task_info:
+    post:
+      summary: returns task info
+      description: returns task info
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example: {
+                  "task_id": "98d10e50-e45b-4f78-ad68-27bf536a1e81"
+              }
+      responses:
+        '200':
+          description: success
+          content:
+            apllication/json:
+              schema:
+                type: object
+                example: {
+                  "annotator_token": "4524084e-c787-4f8a-b5a6-521aaaf82c9b",
+                  "class_names": [
+                    "Нецензурная лексика",
+                    "Повторение"
+                  ],
+                  "room_token": "84935f0b-72c5-4b4d-92c9-6462f42bb3a4",
+                  "room_type": "text_segmentation",
+                  "start_time": 1606947167,
+                  "status": 1,
+                  "task_id": "98d10e50-e45b-4f78-ad68-27bf536a1e81",
+                  "task_time": 120,
+                  "text_id": "10d2b2aa-9c14-48ad-95ed-a6a79537c416",
+                  "word_task": [
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "Это",
+                      "word_idx": 0
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "был",
+                      "word_idx": 1
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "странный",
+                      "word_idx": 2
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "мир:",
+                      "word_idx": 3
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "по",
+                      "word_idx": 4
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "утрам",
+                      "word_idx": 5
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "за",
+                      "word_idx": 6
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "окном",
+                      "word_idx": 7
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "не",
+                      "word_idx": 8
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "пели",
+                      "word_idx": 9
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "птицы,",
+                      "word_idx": 10
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "не",
+                      "word_idx": 11
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "шелестела",
+                      "word_idx": 12
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "трава,",
+                      "word_idx": 13
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "собаки",
+                      "word_idx": 14
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "лаяли",
+                      "word_idx": 15
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "совершенно",
+                      "word_idx": 16
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "беззвучно,",
+                      "word_idx": 17
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "а",
+                      "word_idx": 18
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "мужики,",
+                      "word_idx": 19
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "то",
+                      "word_idx": 20
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "и",
+                      "word_idx": 21
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "дело",
+                      "word_idx": 22
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "ругающиеся",
+                      "word_idx": 23
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "на",
+                      "word_idx": 24
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "улицах,",
+                      "word_idx": 25
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "широко",
+                      "word_idx": 26
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "раскрывали",
+                      "word_idx": 27
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "рты,",
+                      "word_idx": 28
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "но",
+                      "word_idx": 29
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "ни",
+                      "word_idx": 30
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "единого",
+                      "word_idx": 31
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "звука",
+                      "word_idx": 32
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "оттуда",
+                      "word_idx": 33
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "не",
+                      "word_idx": 34
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "доносилось.",
+                      "word_idx": 35
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "В",
+                      "word_idx": 36
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "десять",
+                      "word_idx": 37
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "лет,",
+                      "word_idx": 38
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "после",
+                      "word_idx": 39
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "тяжело",
+                      "word_idx": 40
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "перенесённой",
+                      "word_idx": 41
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "скарлатины,",
+                      "word_idx": 42
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "Костя",
+                      "word_idx": 43
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "почти",
+                      "word_idx": 44
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "оглох,",
+                      "word_idx": 45
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "и",
+                      "word_idx": 46
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "вот",
+                      "word_idx": 47
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "уже",
+                      "word_idx": 48
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "шестой",
+                      "word_idx": 49
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "год",
+                      "word_idx": 50
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "его",
+                      "word_idx": 51
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "окружал",
+                      "word_idx": 52
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "мир",
+                      "word_idx": 53
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "тишины",
+                      "word_idx": 54
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "и",
+                      "word_idx": 55
+                    },
+                    {
+                      "class": "off",
+                      "segmentation_idx": "off",
+                      "word": "покоя.",
+                      "word_idx": 56
+                    }
+                  ],
+                  "work_start_time": 1606947177
+                }
+          

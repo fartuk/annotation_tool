@@ -197,7 +197,9 @@
             task_json['word_task'][i] = new_word_info
         
         }
-        let json = JSON.stringify(task_json);
+        let json = JSON.stringify({task_id: task_json["task_id"],
+                                   word_task: task_json['word_task']});
+
         result = post_request(`http://${location.host}/post_task`, json)
     }    
        

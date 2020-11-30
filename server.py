@@ -156,7 +156,10 @@ def get_task():
 @app.route('/post_task', methods=['post', 'get'])
 @cross_origin()
 def post_task():
-    task_json = json.loads(request.data)
+    task_id = request.json.get('task_id')
+    word_task = request.json.get('word_task')
+    task_json = load_json('data/tasks/{}.json'.format(task_id))
+    task_json["word_task"] = word_task
     task_json["status"] = TaskStatus.FINISHED
     task_json["finish_time"] = int(time.time())
 
@@ -214,5 +217,5 @@ def task_info():
 
     
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True, port=8003)
+    app.run(host='0.0.0.0', debug=True, port=8005)
 
